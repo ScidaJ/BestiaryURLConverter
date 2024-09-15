@@ -62,17 +62,10 @@
         {/if}
     </div>
 
-    <div style="column-count: 2;">
-        <div>
-            {#each output as url}
-                <A href="{url}" target="_blank" rel="noopener noreferrer" style="display: block; margin-bottom: 10px; margin-left: 10px;">{url}</A>
-            {/each}
-        </div>
-        <div>
-            {#each output as url}
-                <P style="display: block; margin-bottom: 10px; margin-left: 10px;">{url}</P>
-            {/each}
-        </div>
+    <div>
+        {#each output as url}
+            <A href="{url}" target="_blank" rel="noopener noreferrer" style="display: block; margin-bottom: 10px; margin-left: 10px;">{url}</A>
+        {/each}
     </div>
 </div>
 
