@@ -1,3 +1,5 @@
+<!-- @TODO: Fix mobile scaling -->
+
 <script lang="ts">
 	import { Button, Heading, Label, Textarea, Toast, Toggle, Tooltip, P, A } from 'flowbite-svelte';
 	import { ClipboardCheckOutline } from 'flowbite-svelte-icons';
@@ -50,15 +52,9 @@
 			let blob = new Blob([text], { type });
 			let data = [new ClipboardItem({ [type]: blob })];
 
-			navigator.clipboard
-				.write(data)
-				.then(() => {
-					console.log('Links copied as HTML');
-				})
-				.catch((err) => {
-					console.error('Error copying to clipboard: ', err);
-				});
-			toastStatus = true;
+			navigator.clipboard.write(data).then(() => {
+				toastStatus = true;
+			});
 			setTimeout(() => {
 				toastStatus = false;
 			}, 3000);
@@ -78,7 +74,7 @@
 </script>
 
 <div>
-	<Heading tag="h2" class="m-2 text-gray-100" customSize="text-4xl font-extrabold "
+	<Heading tag="h2" class="text-gray-100 lg:m-2" customSize="text-4xl font-extrabold "
 		>Welcome to the Bestiary URL Converter!</Heading
 	>
 	<P class="my-4 ml-3 text-gray-300"
@@ -86,8 +82,8 @@
 			href="https://5e.tools/bestiary.html"
 			target="_blank"
 			rel="noopener noreferrer">Bestiary list</A
-		> and click the button to convert them into links to individual stat blocks. Please only copy and
-		paste links that you know are safe.</P
+		> and click the button to convert them into links to individual stat blocks. <br />Please only
+		copy and paste links that you know are safe.</P
 	>
 
 	<div>
@@ -98,7 +94,7 @@
 			id="url-textarea"
 			rows="4"
 			name="url"
-			class="ml-3 w-2/5 bg-gray-700 text-gray-100"
+			class="ml-3 box-border w-11/12 bg-gray-700 text-gray-100 lg:w-2/5"
 		/>
 	</div>
 
@@ -120,7 +116,7 @@
 			<div>
 				<Toggle class="ml-3 mt-2 text-gray-300" bind:checked={copyHtml}>Copy as HTML</Toggle>
 				<Tooltip trigger="hover"
-					>Copy links as HTML links. For use with Google Docs and other editors.</Tooltip
+					>Copy links as HTML. For use with Google Docs and other editors.</Tooltip
 				>
 			</div>
 		{/if}
