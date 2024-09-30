@@ -1,5 +1,3 @@
-<!-- @TODO: Fix mobile scaling -->
-
 <script lang="ts">
 	import { Button, Heading, Label, Textarea, Toast, Toggle, Tooltip, P, A } from 'flowbite-svelte';
 	import { ClipboardCheckOutline } from 'flowbite-svelte-icons';
@@ -60,7 +58,12 @@
 			}, 3000);
 		} else {
 			let text = output.toString();
-			navigator.clipboard.writeText(text);
+			navigator.clipboard.writeText(text).then(() => {
+				toastStatus = true;
+			});
+			setTimeout(() => {
+				toastStatus = false;
+			}, 3000);
 		}
 	}
 
@@ -135,7 +138,7 @@
 			dismissable={false}
 			bind:toastStatus
 			position="bottom-left"
-			class="rounded bg-primary-600"
+			class="w-44 rounded bg-primary-600"
 		>
 			<P class="text-white">Copied to Clipboard</P>
 		</Toast>
