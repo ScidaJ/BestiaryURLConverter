@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Heading, Label, Textarea, Toast, Toggle, Tooltip, P, A } from 'flowbite-svelte';
-	import { ClipboardCheckOutline } from 'flowbite-svelte-icons';
+	import { ClipboardCheckOutline, CloseCircleOutline } from 'flowbite-svelte-icons';
 
 	let copyHtml = false;
 	let output: string[] = [];
@@ -106,9 +106,13 @@
 			<Button class="ml-3" on:click={convert} disabled={!showStateButton}>Convert</Button>
 		</div>
 
-		<div>
-			<Button class="ml-3" on:click={clear} disabled={!showStateButton}>Clear Text</Button>
-		</div>
+		{#if showStateButton}
+			<div>
+				<Button class="ml-3" on:click={clear} disabled={!showStateButton}
+					><CloseCircleOutline /></Button
+				>
+			</div>
+		{/if}
 
 		{#if showStateCopy}
 			<div>
