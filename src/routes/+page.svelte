@@ -77,7 +77,7 @@
 </script>
 
 <div>
-	<Heading tag="h2" class="text-gray-100 lg:m-2" customSize="text-4xl font-extrabold "
+	<Heading tag="h2" class="text-gray-100 lg:p-2" customSize="text-4xl font-extrabold "
 		>Welcome to the Bestiary URL Converter!</Heading
 	>
 	<P class="my-4 ml-3 text-gray-300"
