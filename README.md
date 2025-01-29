@@ -5,7 +5,7 @@ Used to convert links from the [Bestiary List](https://5e.tools/bestiary.html)[(
 Accessible here: https://scida.dev/
 
 Before
-![Alt text](/static/before.png "Before")
+![Alt text](/static/before.png 'Before')
 
 After
-![Alt text](/static/after.png "After")
+![Alt text](/static/after.png 'After')
