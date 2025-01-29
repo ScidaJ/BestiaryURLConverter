@@ -1,79 +1,80 @@
+<!-- TODO: Change Google Docs toggle into dropdown for Google Docs, Notion, and plain text -->
 <script lang="ts">
-	import { Button, Footer, Heading, Hr, Label, Textarea, Toast, Toggle, Tooltip, P, A, FooterIcon } from 'flowbite-svelte';
-	import { ClipboardCheckOutline, CloseCircleOutline, GithubSolid } from 'flowbite-svelte-icons';
+    import { Button, Footer, Heading, Hr, Label, Textarea, Toast, Toggle, Tooltip, P, A, FooterIcon } from 'flowbite-svelte';
+    import { ClipboardCheckOutline, CloseCircleOutline, GithubSolid } from 'flowbite-svelte-icons';
 
-	let copyHtml = false;
-	let output: string[] = [];
-	let showStateButton = false;
-	let showStateCopy = false;
-	let toastStatus = false;
-	let value = '';
+    let copyHtml = $state(false);
+    let output: string[] = $state([]);
+    let showStateButton = $state(false);
+    let showStateCopy = $state(false);
+    let toastStatus = $state(false);
+    let value = $state('');
 
-	function clear() {
-		if (value != '') {
-			value = '';
-			output = [];
-			showStateButton = false;
-			showStateCopy = false;
-		}
-	}
+    function clear() {
+        if (value != '') {
+            value = '';
+            output = [];
+            showStateButton = false;
+            showStateCopy = false;
+        }
+    }
 
-	function convert() {
-		output = [];
+    function convert() {
+        output = [];
 
-		let urls = value.split(/\r\n|\r|\n/);
-		urls.forEach((url) => {
-			if (!url.includes('https://5e.tools/bestiary')) {
-				return;
-			}
-			url = url.replace('bestiary.html#', 'bestiary/');
-			url = url.replaceAll('%20', '-');
-			url = url.replaceAll('_', '-');
-			url = url.concat('.html');
+        let urls = value.split(/\r\n|\r|\n/);
+        urls.forEach((url) => {
+        if (!url.includes('https://5e.tools/bestiary')) {
+            return;
+        }
+        url = url.replace('bestiary.html#', 'bestiary/');
+        url = url.replaceAll('%20', '-');
+        url = url.replaceAll('_', '-');
+        url = url.concat('.html');
 
-			output = [...output, url];
-		});
+        output = [...output, url];
+        });
 
-		if (output.length > 0) {
-			showStateCopy = true;
-		} else {
-			showStateCopy = false;
-		}
-	}
+        showStateCopy = output.length > 0;
+    }
 
-	function copyToClipboard() {
-		if (copyHtml) {
-			let text = output
-				.map((link) => `<a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a>`)
-				.join('<br>'); // Generate HTML links
-			let type = 'text/html';
-			let blob = new Blob([text], { type });
-			let data = [new ClipboardItem({ [type]: blob })];
+    function copyToClipboard() {
+        if (copyHtml) {
+            let text = output
+                .map((link) => `<a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a>`)
+                .join('<br>'); // Generate HTML links
+            let type = 'text/html';
+            let blob = new Blob([text], { type });
+            let data = [new ClipboardItem({ [type]: blob })];
 
-			navigator.clipboard.write(data).then(() => {
-				toastStatus = true;
-			});
-			setTimeout(() => {
-				toastStatus = false;
-			}, 3000);
-		} else {
-			let text = output.toString();
-			navigator.clipboard.writeText(text).then(() => {
-				toastStatus = true;
-			});
-			setTimeout(() => {
-				toastStatus = false;
-			}, 3000);
-		}
-	}
+            navigator.clipboard.write(data).then(() => {
+                toastStatus = true;
+            });
+            setTimeout(() => {
+                toastStatus = false;
+            }, 3000);
+        } else {
+            let text = output.toString();
+            text = text.replaceAll(",","\n");
+            navigator.clipboard.writeText(text).then(() => {
+                toastStatus = true;
+            });
+            setTimeout(() => {
+                toastStatus = false;
+            }, 3000);
+        }
+    }
 
-	function checkInputLength() {
-		if (value.length > 0) {
-			showStateButton = true;
-		} else {
-			showStateButton = false;
-		}
-	}
+    function checkInputLength() {
+        console.log("Checking length")
+        showStateButton = value.length > 0;
+    }
+
+    function handlePaste() {
+        setTimeout(() => {
+            value += "\n"
+        }, 0);
+    }
 </script>
 
 <div class="flex flex-col h-screen justify-between">
@@ -95,8 +96,9 @@
             <Textarea
             bind:value
             on:input={checkInputLength}
+            on:paste={handlePaste}
             id="url-textarea"
-            rows="4"
+            rows={4}
             name="url"
             class="ml-3 box-border w-11/12 bg-gray-700 text-gray-100 lg:w-2/5"
             />
