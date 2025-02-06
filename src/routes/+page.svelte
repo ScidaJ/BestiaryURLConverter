@@ -1,4 +1,3 @@
-<!-- TODO: Change Google Docs toggle into dropdown for Google Docs, Notion, and plain text -->
 <script lang="ts">
 	import {
 		Button,
@@ -12,11 +11,20 @@
 		Tooltip,
 		P,
 		A,
-		FooterIcon
+		FooterIcon,
+		Select,
+		type SelectOptionType
 	} from 'flowbite-svelte';
 	import { ClipboardCheckOutline, CloseCircleOutline, GithubSolid } from 'flowbite-svelte-icons';
 
-	let copyHtml = $state(false);
+	const CopyFormat: SelectOptionType<string>[] = [
+		{ value: 'plain', name: 'Plain Text' },
+		{ value: 'notion', name: 'Notion' },
+		{ value: 'googleDocs', name: 'Google Docs' }
+	];
+
+	let convertedText: string = $state('');
+	let format: string = $state(CopyFormat[1].value);
 	let output: string[] = $state([]);
 	let showStateButton = $state(false);
 	let showStateCopy = $state(false);
@@ -48,38 +56,51 @@
 			output = [...output, url];
 		});
 
+		convertText();
+
 		showStateCopy = output.length > 0;
 	}
 
-	function copyToClipboard() {
-		if (copyHtml) {
-			let text = output
-				.map((link) => `<a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a>`)
-				.join('<br>'); // Generate HTML links
-			let type = 'text/html';
-			let blob = new Blob([text], { type });
-			let data = [new ClipboardItem({ [type]: blob })];
-
-			navigator.clipboard.write(data).then(() => {
-				toastStatus = true;
-			});
-			setTimeout(() => {
-				toastStatus = false;
-			}, 3000);
-		} else {
-			let text = output.toString();
-			text = text.replaceAll(',', '\n');
-			navigator.clipboard.writeText(text).then(() => {
-				toastStatus = true;
-			});
-			setTimeout(() => {
-				toastStatus = false;
-			}, 3000);
+	function convertText() {
+		switch (format) {
+			case 'plain':
+				convertedText = output.toString().replaceAll(',', '\n');
+				break;
+			case 'notion':
+				convertedText = output.toString().replaceAll(',', '  \n');
+				break;
+			case 'googleDocs':
+				convertedText = output
+					.map((link) => `<a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a>`)
+					.join('<br>'); // Generate HTML links
+				break;
 		}
 	}
 
+	function copyToClipboard() {
+		switch (format) {
+			case 'plain':
+			case 'notion':
+				navigator.clipboard.writeText(convertedText).then(() => {
+					toastStatus = true;
+				});
+				break;
+			case 'googleDocs':
+				let type = 'text/html';
+				let blob = new Blob([convertedText], { type });
+				let data = [new ClipboardItem({ [type]: blob })];
+
+				navigator.clipboard.write(data).then(() => {
+					toastStatus = true;
+				});
+				break;
+		}
+		setTimeout(() => {
+			toastStatus = false;
+		}, 3000);
+	}
+
 	function checkInputLength() {
-		console.log('Checking length');
 		showStateButton = value.length > 0;
 	}
 
@@ -136,20 +157,23 @@
 					<Tooltip trigger="hover">Copy to Clipboard</Tooltip>
 				</div>
 
-				<div>
-					<Toggle class="ml-3 mt-2 text-gray-300" bind:checked={copyHtml}>Copy as HTML</Toggle>
-					<Tooltip trigger="hover"
-						>Copy links as HTML. For use with Google Docs and other editors.</Tooltip
-					>
+				<div class="flex">
+					<Label class="ml-2 mt-2.5 whitespace-nowrap text-gray-400">Copy Format</Label>
+					<Select
+						id="format-select"
+						class="ml-3"
+						items={CopyFormat}
+						bind:value={format}
+						placeholder="Copy Format"
+						on:change={convertText}
+					/>
 				</div>
 			{/if}
 		</div>
 
-		<div class="mt-1 inline-grid">
+		<div class="mt-1 grid">
 			{#each output as url}
-				<A href={url} target="_blank" rel="noopener noreferrer" class="mb-2 ml-3 inline-block"
-					>{url}</A
-				>
+				<A href={url} target="_blank" rel="noopener noreferrer" class="mb-2 ml-3 lg:w-1/2">{url}</A>
 			{/each}
 		</div>
 
