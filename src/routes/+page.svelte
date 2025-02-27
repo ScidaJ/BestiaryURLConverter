@@ -12,19 +12,17 @@
 		P,
 		A,
 		FooterIcon,
-		Select,
 		type SelectOptionType
 	} from 'flowbite-svelte';
 	import { ClipboardCheckOutline, CloseCircleOutline, GithubSolid } from 'flowbite-svelte-icons';
 
 	const CopyFormat: SelectOptionType<string>[] = [
 		{ value: 'plain', name: 'Plain Text' },
-		{ value: 'notion', name: 'Notion' },
 		{ value: 'googleDocs', name: 'Google Docs' }
 	];
 
 	let convertedText: string = $state('');
-	let format: string = $state(CopyFormat[1].value);
+	let format: boolean = $state(false);
 	let output: string[] = $state([]);
 	let showStateButton = $state(false);
 	let showStateCopy = $state(false);
@@ -63,13 +61,10 @@
 
 	function convertText() {
 		switch (format) {
-			case 'plain':
-				convertedText = output.toString().replaceAll(',', '\n');
-				break;
-			case 'notion':
+			case false:
 				convertedText = output.toString().replaceAll(',', '  \n');
 				break;
-			case 'googleDocs':
+			case true:
 				convertedText = output
 					.map((link) => `<a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a>`)
 					.join('<br>'); // Generate HTML links
@@ -79,13 +74,12 @@
 
 	function copyToClipboard() {
 		switch (format) {
-			case 'plain':
-			case 'notion':
+			case false:
 				navigator.clipboard.writeText(convertedText).then(() => {
 					toastStatus = true;
 				});
 				break;
-			case 'googleDocs':
+			case true:
 				let type = 'text/html';
 				let blob = new Blob([convertedText], { type });
 				let data = [new ClipboardItem({ [type]: blob })];
@@ -158,15 +152,9 @@
 				</div>
 
 				<div class="flex">
-					<Label class="ml-2 mt-2.5 whitespace-nowrap text-gray-400">Copy Format</Label>
-					<Select
-						id="format-select"
-						class="ml-3"
-						items={CopyFormat}
-						bind:value={format}
-						placeholder="Copy Format"
-						on:change={convertText}
-					/>
+					<Label class="ml-2 mt-2.5 whitespace-nowrap text-gray-400">Google Docs?</Label>
+					<Toggle id="format-toggle" class="ml-3" bind:checked={format} on:change={convertText} />
+					<Tooltip trigger="hover">Makes links clickable when pasted in Google Docs</Tooltip>
 				</div>
 			{/if}
 		</div>
